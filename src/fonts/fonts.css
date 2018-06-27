@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'OpenSans-Regular';
+    src: local('OpenSans-Regular.ttf'), url('./OpenSans-Regular.ttf');
+}
+@font-face {
+    font-family: 'PingFang-Regular';
+    src: local('PingFang-Regular.ttf'), url('./PingFang-Regular.ttf');
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('./Roboto/Roboto-Medium.woff2') format('woff2')
+}

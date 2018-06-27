@@ -1,0 +1,6 @@
+{
+  "ENV": "prod",
+  "BACKEND_API": "https://api.freesnow.com",
+  "WS": "ws://172.31.37.98:9396",
+  "CHART_URL": "http://10.0.20.83:9003/"
+}

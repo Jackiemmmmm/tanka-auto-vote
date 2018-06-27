@@ -1,0 +1,36 @@
+$transition: 0.3s;
+$container-width: 1190px;
+$headerHeight: 60px;
+$footerHeight: 160px;
+$tradeHeight: 300px;
+$placeOrderWidth: 250px;
+$sidebarWidth: 270px;
+
+$headerFooterBgColor: #282727;
+$bgColor: #1a1a1a;
+$panelBgColor: #222;
+$errorColor: #e91010;
+$primaryColor: #4a90e2;
+$sellColor: #a53131;
+$buyColor: #589065;
+$textColor: #999;
+$price_height: 50px;
+
+$chartHeight: 489px;
+$orderBookHeaderHeight: 40px;
+$orderBookColumnWidth: 78px;
+
+@mixin container {
+  width: 100%;
+  max-width: $container-width;
+  margin: 0 auto;
+  position: relative;
+}
+
+@mixin btn {
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1;
+  outline: none;
+}

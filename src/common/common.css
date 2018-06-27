@@ -1,0 +1,71 @@
+@import "common/constants.css";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+html {
+  font: 16px/1 PingFang SC, Hiragino Sans GB, Heiti SC, Microsoft YaHei, serif;
+}
+body {
+  min-width: $container-width;
+}
+dl,
+dt,
+dd,
+a {
+  text-decoration: none;
+}
+h5 {
+  font-weight: normal;
+  font-size: inherit;
+}
+ol,
+ul {
+  list-style: none;
+  margin: 0;
+}
+li {
+  list-style-type: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+a {
+  color: inherit;
+  cursor: pointer;
+}
+button {
+  border: 0;
+  cursor: pointer;
+  outline: none;
+}
+input {
+  outline: none;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+.container {
+  @include container;
+}

@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>BTCC WEB</title>
+  <meta name="description" lang="en" content="" />
+  <meta name="description" lang="zh" content="" />
+  <link rel="icon" href="btcc_logo_favicon_v2_32.ico">
+  <meta name="keywords" content="">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="screen-orientation" content="portrait" />
+  <meta name="full-screen" content="yes">
+  <meta name="x5-fullscreen" content="true">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="MobileOptimized" content="320">
+  <meta name="x5-orientation" content="portrait">
+  <meta name="browsermode" content="application">
+  <meta name="x5-page-mode" content="app">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="BTCC WEB">
+  <!-- <% for (var chunk in htmlWebpackPlugin.files.css) { %>
+    <link href="<%= htmlWebpackPlugin.files.css[chunk] %>" rel="stylesheet">
+  <% } %> -->
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    .app {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .ie-must-die {
+      width: 100%;
+      height: 500px;
+    }
+    .ie-container {
+      width: 1200px;
+      margin: 130px auto 0;
+      text-align: center;
+    }
+    .btcc-logo {
+      margin-bottom: 15px;
+    }
+    .ie-container h3 {
+      color: #1ea6c3;
+      font-size: 22px;
+      font-weight: normal;
+      margin-bottom: 30px;
+    }
+    .ie-container p {
+      font-size: 16px;
+      color: #666666;
+      line-height: 40px;
+      margin-bottom: 30px;
+    }
+    .link-browser a {
+      display: inline-block;
+    }
+    .link-browser img {
+      margin-bottom: 10px;
+    }
+    .link-last-item {
+      margin-left: 120px;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <!--[if IE]>
+  <style>
+    #app {
+      display: none;
+    }
+  </style>
+  <![endif]-->
+</head>
+
+<body>
+  <!--[if IE]>
+    <div class="ie-must-die">
+      <div class="ie-container">
+        <h3>BTCC</h3>
+        <p>
+          您当前使用的是IE浏览器，暂不能正常浏览和使用BTCC
+          <br />
+          建议更换以下浏览器后继续使用BTCC
+        </p>
+        <div class="link-browser">
+          <a href="http://rj.baidu.com/soft/detail/14744.html" rel="noopener noreferrer" target="_blank">
+            <br />
+            谷歌浏览器
+          </a>
+          <a href="http://rj.baidu.com/soft/detail/11843.html" class="link-last-item" rel="noopener noreferrer" target="_blank">
+            <br />
+            火狐浏览器
+          </a>
+        </div>
+      </div>
+    </div>
+  <![endif]-->
+    
+  <div id="app">
+      Loading...
+  </div>
+  <!-- <% if (htmlWebpackPlugin.options.process) { %>
+    <script>(function() {if('serviceWorker' in navigator) {navigator.serviceWorker.register('/service-worker.js');}})();</script>
+  <% } %> -->
+  <script>
+    (function(undefined) {}).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+  </script>
+  <!-- <% for (var chunk in htmlWebpackPlugin.files.chunks) { console.log(htmlWebpackPlugin.files, chunk) %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+  <% } %> -->
+</body>
+
+</html>
