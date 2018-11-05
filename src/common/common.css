@@ -12,9 +12,6 @@
 html {
   font: 16px/1 PingFang SC, Hiragino Sans GB, Heiti SC, Microsoft YaHei, serif;
 }
-body {
-  min-width: $container-width;
-}
 dl,
 dt,
 dd,
