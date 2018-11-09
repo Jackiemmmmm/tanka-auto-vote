@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const { resolve } = require('path');
-const { compile } = require('google-closure-compiler-js');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const HtmlwebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -8,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const devMode = process.env.NODE_ENV !== 'production';
 const ROOT_PATH = resolve(__dirname);
 const BASE_PATH = resolve(ROOT_PATH, '../src');
-const BUILD_PATH = resolve(ROOT_PATH, 'build');
+const BUILD_PATH = resolve(ROOT_PATH, '../build');
 
 console.log(BASE_PATH);
 
@@ -122,11 +121,7 @@ exports.baseConfig = {
         // removeComments: true,
         collapseWhitespace: true,
         minifyCSS: true,
-        minifyJS: source => (
-          source
-            ? compile({ jsCode: [{ src: source }] }).compiledCode
-            : ''
-        ),
+        minifyJS: !devMode,
         removeRedundantAttributes: true,
         useShortDoctype: true,
         removeEmptyAttributes: true,
