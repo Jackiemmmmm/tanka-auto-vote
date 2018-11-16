@@ -1,14 +1,17 @@
 import React, { PureComponent } from 'react';
 import Axios from 'axios';
+import {
+  Row, Col, Select, Input, notification,
+} from 'antd';
 import styles from './styles.css';
 
-export default class Home extends PureComponent {
+const { Option } = Select;
+
+export default class Votes extends PureComponent {
   state = {
     cacheList: [],
-    searchResult: {
-      count: 0,
-      list: [],
-    },
+    list: [],
+    settimeoutMap: {},
   }
 
   componentWillMount() {
@@ -18,7 +21,36 @@ export default class Home extends PureComponent {
     }
   }
 
-  async voteRequest(cardid, token) {
+  handleChange = (value) => {
+    console.log(`selected ${value}`);
+  }
+
+  async fakeShareWeixin({ cardid, token, length, name }) {
+    try {
+      const { data } = await Axios.post(
+        'https://api-tanka.tictalk.com/v1/shares/fake_weixin',
+        {
+          entity_type: 'card',
+          entity_id: cardid,
+          target_type: 'weixin',
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        },
+      );
+      console.log(data);
+      this.voteRequest({ cardid, token, length, name }, true);
+    } catch (error) {
+      notification.error({
+        message: '分享失败',
+        description: error.message,
+      });
+    }
+  }
+
+  async voteRequest({ cardid, token, length, name }, bol = false) {
     try {
       const { data } = await Axios.post(
         'https://api-tanka.tictalk.com/vote',
@@ -32,9 +64,41 @@ export default class Home extends PureComponent {
           },
         },
       );
-      console.log(data);
+      notification.success({
+        message: '投票成功',
+        description: `已用${length}个账号为用户${name}投票`,
+      });
+      const { list, settimeoutMap } = this.state;
+      if (!settimeoutMap[cardid]) {
+        this.setState(prev => ({
+          settimeoutMap: Object.assign({}, prev.settimeoutMap, {
+            [cardid]: { cardid, token, length, name },
+          }),
+        }), () => {
+          console.log(settimeoutMap);
+        });
+      }
+      return this.setState({
+        list: list.map((item) => {
+          if (item.card.card_id === cardid) {
+            return Object.assign({}, item, {
+              votes: item.votes + data.result.votes,
+            });
+          }
+          return item;
+        }),
+      }, () => {
+        if (!bol) this.voteRequest({ cardid, token, length, name });
+      });
     } catch (error) {
-      console.log('Vote Request', error);
+      console.log(error);
+      if (error.response && error.response.data.code === 711) {
+        return this.fakeShareWeixin({ cardid, token, length, name });
+      }
+      return notification.error({
+        message: '投票失败',
+        description: error.response && error.response.data.message,
+      });
     }
   }
 
@@ -52,9 +116,9 @@ export default class Home extends PureComponent {
       this.setState({ cacheList: JSON.parse(data) });
       return e.target.reset();
     }
-    const { cardid } = e.target;
+    const { cardid, cardname } = e.target;
     const { cacheList } = this.state;
-    return cacheList.map(item => this.voteRequest(cardid.value, item.token));
+    return cacheList.map(item => this.voteRequest({ cardid: cardid.value, token: item.token, length: cacheList.length, name: cardname.value }));
   }
 
   async searchSubmit(e) {
@@ -62,9 +126,16 @@ export default class Home extends PureComponent {
       e.preventDefault();
       const { keyward } = e.target;
       const { data } = await Axios.get(`https://api-tanka.tictalk.com/activity/super_fit_star_2018/search/?keyword=${keyward.value}&page=1&per_page=20`);
-      this.setState({ searchResult: data.result });
+      notification.success({
+        message: '搜索成功',
+        description: `共${data.result.count}条结果`,
+      });
+      this.setState({ list: data.result.list });
     } catch (error) {
-      console.log(error);
+      notification.error({
+        message: '搜索失败',
+        description: error.message,
+      });
     }
   }
 
@@ -73,63 +144,86 @@ export default class Home extends PureComponent {
   }
 
   render() {
-    const { cacheList, searchResult: { list } } = this.state;
+    const { cacheList, list } = this.state;
     return (
       <div>
-        <div>
-          <h5>缓存账号</h5>
+        <Row gutter={24}>
+          <Col span={24}>
+            <h5>缓存账号</h5>
+          </Col>
           <form onSubmit={e => this.formSubmit(e, true)}>
-            <input name="token" placeholder="账号token" />
-            <input name="remark" placeholder="备注" />
-            <button type="submit">Save</button>
+            <Col span={6}>
+              <Input name="token" placeholder="账号token" />
+            </Col>
+            <Col span={6}>
+              <Input name="remark" placeholder="备注" />
+            </Col>
+            <Col span={6}>
+              <button className="ant-btn ant-btn-primary" type="submit">保存</button>
+            </Col>
           </form>
-        </div>
-        <div>
-          <h5>搜索用户</h5>
-          <form onSubmit={this.searchSubmit.bind(this)}>
-            <input name="keyward" />
-          </form>
-        </div>
-        <div>
-          <h5>会被用于投票的账号</h5>
-          <select>
-            {
-              cacheList.length !== 0
-                ? cacheList.map((item, idx) => (
-                  <option key={`${item.token} ${idx}`} value={item.token}>{item.remark}</option>
+          <Col span={24}>
+            <h5>会被用于投票的账号</h5>
+          </Col>
+          <Col span={24}>
+            <Select
+              style={{ width: '50%' }}
+              placeholder="请选择"
+              mode="multiple"
+              defaultValue={cacheList.map(item => item.remark)}
+              onChange={this.handleChange}
+            >
+              {
+                cacheList.length !== 0
+                && cacheList.map((item, idx) => (
+                  <Option key={`${item.token} ${idx}`} value={item.token}>{item.remark}</Option>
                 ))
-                : <option selected disabled>no select</option>
+              }
+            </Select>
+          </Col>
+          <Col span={24}>
+            <h5>搜索用户</h5>
+          </Col>
+          <form onSubmit={this.searchSubmit.bind(this)}>
+            <Col span={6}>
+              <Input name="keyward" placeholder="搜索关键字" />
+            </Col>
+            <Col span={6}>
+              <button className="ant-btn ant-btn-primary" type="submit">搜索</button>
+            </Col>
+          </form>
+          <Col span={24}>
+            {
+              list.length !== 0
+                ? list.map(item => (
+                  <div key={item.card.card_id} className={styles.card}>
+                    <div className={styles['card-img']}>
+                      <img src={`${item.card.cover_url}`} alt={item.role.name} />
+                    </div>
+                    <div className={styles['card-body']}>
+                      <div className={styles['card-title']}>
+                        {item.card.fields.find(fields => fields.key === 'name').value}
+                      </div>
+                      <div className={styles['card-votes']}>
+                        <span>{this.toThousands(item.votes)}</span>
+                        票
+                      </div>
+                      <div>
+                        <form onSubmit={this.formSubmit.bind(this)}>
+                          <input type="hidden" name="cardid" value={item.card.card_id} />
+                          <input type="hidden" name="cardname" value={item.card.fields.find(fields => fields.key === 'name').value} />
+                          <button type="submit" className={styles['card-button']}>
+                            一键投票
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                ))
+                : <div>no result</div>
             }
-          </select>
-          {
-            list.length !== 0
-              ? list.map(item => (
-                <div key={item.card.card_id} className={styles.card}>
-                  <div className={styles['card-img']}>
-                    <img src={`${item.card.cover_url}`} alt={item.role.name} />
-                  </div>
-                  <div className={styles['card-body']}>
-                    <div className={styles['card-title']}>
-                      {item.card.fields.find(fields => fields.key === 'name').value}
-                    </div>
-                    <div className={styles['card-votes']}>
-                      <span>{this.toThousands(item.votes)}</span>
-                      票
-                    </div>
-                    <div>
-                      <form onSubmit={this.formSubmit.bind(this)}>
-                        <input type="hidden" name="cardid" value={item.card.card_id} />
-                        <button type="submit" className={styles['card-button']}>
-                          Pick Ta
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              ))
-              : <div>no result</div>
-          }
-        </div>
+          </Col>
+        </Row>
       </div>
     );
   }
