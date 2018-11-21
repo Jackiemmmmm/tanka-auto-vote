@@ -3,6 +3,7 @@ import Axios from 'axios';
 import {
   Row, Col, Select, Input, notification,
 } from 'antd';
+import Timer from './timer';
 import styles from './styles.css';
 
 const { Option } = Select;
@@ -13,6 +14,8 @@ export default class Votes extends PureComponent {
     list: [],
     settimeoutMap: {},
   }
+
+  setData = {};
 
   componentWillMount() {
     const data = localStorage.getItem('cache');
@@ -40,8 +43,7 @@ export default class Votes extends PureComponent {
           },
         },
       );
-      console.log(data);
-      this.voteRequest({ cardid, token, length, name }, true);
+      if (data) this.voteRequest({ cardid, token, length, name }, true);
     } catch (error) {
       notification.error({
         message: '分享失败',
@@ -50,8 +52,25 @@ export default class Votes extends PureComponent {
     }
   }
 
-  async voteRequest({ cardid, token, length, name }, bol = false) {
+  async voteRequest({ cardid, token, length, name, idx = null }, bol = false) {
     try {
+      if (idx !== null) {
+        if (!this.setData[cardid]) {
+          this.setData[cardid] = [{ cardid, token, name }];
+        } else {
+          const d = this.setData[cardid];
+          d.push({ cardid, token, name });
+          this.setData = Object.assign({}, this.setData, {
+            [cardid]: d,
+          });
+        }
+        this.showArr[idx] = true;
+        if (this.showArr.filter(i => !i).length === 0) {
+          this.setState(() => ({
+            settimeoutMap: { ...this.setData },
+          }));
+        }
+      }
       const { data } = await Axios.post(
         'https://api-tanka.tictalk.com/vote',
         {
@@ -68,16 +87,7 @@ export default class Votes extends PureComponent {
         message: '投票成功',
         description: `已用${length}个账号为用户${name}投票`,
       });
-      const { list, settimeoutMap } = this.state;
-      if (!settimeoutMap[cardid]) {
-        this.setState(prev => ({
-          settimeoutMap: Object.assign({}, prev.settimeoutMap, {
-            [cardid]: { cardid, token, length, name },
-          }),
-        }), () => {
-          console.log(settimeoutMap);
-        });
-      }
+      const { list } = this.state;
       return this.setState({
         list: list.map((item) => {
           if (item.card.card_id === cardid) {
@@ -118,7 +128,14 @@ export default class Votes extends PureComponent {
     }
     const { cardid, cardname } = e.target;
     const { cacheList } = this.state;
-    return cacheList.map(item => this.voteRequest({ cardid: cardid.value, token: item.token, length: cacheList.length, name: cardname.value }));
+    this.showArr = cacheList.map(() => false);
+    return cacheList.map((item, idx) => this.voteRequest({
+      cardid: cardid.value,
+      token: item.token,
+      length: cacheList.length,
+      name: cardname.value,
+      idx,
+    }));
   }
 
   async searchSubmit(e) {
@@ -144,7 +161,7 @@ export default class Votes extends PureComponent {
   }
 
   render() {
-    const { cacheList, list } = this.state;
+    const { cacheList, list, settimeoutMap } = this.state;
     return (
       <div>
         <Row gutter={24}>
@@ -180,6 +197,14 @@ export default class Votes extends PureComponent {
                 ))
               }
             </Select>
+          </Col>
+          <Col span={24}>
+            <h5>定时投票用户</h5>
+          </Col>
+          <Col span={24}>
+            {Object.values(settimeoutMap).map(item => (
+              <Timer key={item[0].cardid} item={item} callback={obj => this.voteRequest(obj)} />
+            ))}
           </Col>
           <Col span={24}>
             <h5>搜索用户</h5>

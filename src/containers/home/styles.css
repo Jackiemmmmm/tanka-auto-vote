@@ -53,3 +53,7 @@ select {
     margin: 0 auto
   }
 }
+
+.timer {
+  width: 300px;
+}
