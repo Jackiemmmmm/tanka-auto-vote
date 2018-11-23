@@ -3,10 +3,12 @@ import {
   Route as BasicRoute,
   Switch,
   Router,
+  // Redirect,
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import { createBrowserHistory } from 'history';
 import NoMatch from 'containers/no-match';
+import Layout from 'containers/layout';
 import Loading from 'components/loading';
 import 'common/common.css';
 
@@ -57,12 +59,31 @@ const Home = asyncComponent(() => import(/* webpackChunkName: "Home" */'containe
 
 const history = createBrowserHistory();
 
+/**
+const Route = ({ path, exact, component: Component }) => (
+  <BasicRoute
+    exact={exact}
+    path={path}
+    render={(props) => {
+      const { location } = props;
+      const loggedIn = localStorage.getItem('loggedIn');
+      if (!loggedIn) {
+        return <Redirect to={{ pathname: '/', prevPath: location.pathname }} />;
+      }
+      return <Component {...props} />;
+    }}
+  />
+);
+*/
+
 const App = () => (
   <Router history={history}>
-    <Switch>
-      <BasicRoute exact path="/" component={Home} />
-      <BasicRoute component={NoMatch} />
-    </Switch>
+    <Layout>
+      <Switch>
+        <BasicRoute exact path="/" component={Home} />
+        <BasicRoute component={NoMatch} />
+      </Switch>
+    </Layout>
   </Router>
 );
 

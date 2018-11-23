@@ -1,12 +1,11 @@
 import React, { PureComponent } from 'react';
 import Axios from 'axios';
-import {
-  Row, Col, Select, Input, notification,
-} from 'antd';
+import { Row, Col, Select, Input, notification, Layout } from 'antd';
 import Timer from './timer';
 import styles from './styles.css';
 
 const { Option } = Select;
+const { Header, Footer, Content } = Layout;
 
 export default class Votes extends PureComponent {
   state = {
@@ -163,93 +162,102 @@ export default class Votes extends PureComponent {
   render() {
     const { cacheList, list, settimeoutMap } = this.state;
     return (
-      <div>
-        <Row gutter={24}>
-          <Col span={24}>
-            <h5>缓存账号</h5>
-          </Col>
-          <form onSubmit={e => this.formSubmit(e, true)}>
-            <Col span={6}>
-              <Input name="token" placeholder="账号token" />
-            </Col>
-            <Col span={6}>
-              <Input name="remark" placeholder="备注" />
-            </Col>
-            <Col span={6}>
-              <button className="ant-btn ant-btn-primary" type="submit">保存</button>
-            </Col>
-          </form>
-          <Col span={24}>
-            <h5>会被用于投票的账号</h5>
-          </Col>
-          <Col span={24}>
-            <Select
-              style={{ width: '50%' }}
-              placeholder="请选择"
-              mode="multiple"
-              defaultValue={cacheList.map(item => item.remark)}
-              onChange={this.handleChange}
-            >
-              {
-                cacheList.length !== 0
-                && cacheList.map((item, idx) => (
-                  <Option key={`${item.token} ${idx}`} value={item.token}>{item.remark}</Option>
-                ))
-              }
-            </Select>
-          </Col>
-          <Col span={24}>
-            <h5>定时投票用户</h5>
-          </Col>
-          <Col span={24}>
-            {Object.values(settimeoutMap).map(item => (
-              <Timer key={item[0].cardid} item={item} callback={obj => this.voteRequest(obj)} />
-            ))}
-          </Col>
-          <Col span={24}>
-            <h5>搜索用户</h5>
-          </Col>
-          <form onSubmit={this.searchSubmit.bind(this)}>
-            <Col span={6}>
-              <Input name="keyward" placeholder="搜索关键字" />
-            </Col>
-            <Col span={6}>
-              <button className="ant-btn ant-btn-primary" type="submit">搜索</button>
-            </Col>
-          </form>
-          <Col span={24}>
-            {
-              list.length !== 0
-                ? list.map(item => (
-                  <div key={item.card.card_id} className={styles.card}>
-                    <div className={styles['card-img']}>
-                      <img src={`${item.card.cover_url}`} alt={item.role.name} />
-                    </div>
-                    <div className={styles['card-body']}>
-                      <div className={styles['card-title']}>
-                        {item.card.fields.find(fields => fields.key === 'name').value}
+      <Layout style={{ height: '100%' }}>
+        <Header className={styles.header}>简化操作工具</Header>
+        <Content className={styles.content}>
+          <div>
+            <Row gutter={24}>
+              <Col span={24}>
+                <h5>缓存账号</h5>
+              </Col>
+              <form onSubmit={e => this.formSubmit(e, true)}>
+                <Col span={6}>
+                  <Input name="token" placeholder="账号token" />
+                </Col>
+                <Col span={6}>
+                  <Input name="remark" placeholder="备注" />
+                </Col>
+                <Col span={6}>
+                  <button className="ant-btn ant-btn-primary" type="submit">保存</button>
+                </Col>
+              </form>
+              <Col span={24}>
+                <h5>会被用于投票的账号</h5>
+              </Col>
+              <Col span={24}>
+                <Select
+                  style={{ width: '50%' }}
+                  placeholder="请选择"
+                  mode="multiple"
+                  defaultValue={cacheList.map(item => item.remark)}
+                  onChange={this.handleChange}
+                >
+                  {
+                    cacheList.length !== 0
+                    && cacheList.map((item, idx) => (
+                      <Option key={`${item.token} ${idx}`} value={item.token}>{item.remark}</Option>
+                    ))
+                  }
+                </Select>
+              </Col>
+              <Col span={24}>
+                <h5>定时投票用户</h5>
+              </Col>
+              <Col span={24}>
+                {Object.values(settimeoutMap).map(item => (
+                  <Timer key={item[0].cardid} item={item} callback={obj => this.voteRequest(obj)} />
+                ))}
+              </Col>
+              <Col span={24}>
+                <h5>搜索用户</h5>
+              </Col>
+              <form onSubmit={this.searchSubmit.bind(this)}>
+                <Col span={6}>
+                  <Input name="keyward" placeholder="搜索关键字" />
+                </Col>
+                <Col span={6}>
+                  <button className="ant-btn ant-btn-primary" type="submit">搜索</button>
+                </Col>
+              </form>
+              <Col span={24}>
+                {
+                  list.length !== 0
+                    ? list.map(item => (
+                      <div key={item.card.card_id} className={styles.card}>
+                        <div className={styles['card-img']}>
+                          <img src={`${item.card.cover_url}`} alt={item.role.name} />
+                        </div>
+                        <div className={styles['card-body']}>
+                          <div className={styles['card-title']}>
+                            {item.card.fields.find(fields => fields.key === 'name').value}
+                          </div>
+                          <div className={styles['card-votes']}>
+                            <span>{this.toThousands(item.votes)}</span>
+                            票
+                          </div>
+                          <div>
+                            <form onSubmit={this.formSubmit.bind(this)}>
+                              <input type="hidden" name="cardid" value={item.card.card_id} />
+                              <input type="hidden" name="cardname" value={item.card.fields.find(fields => fields.key === 'name').value} />
+                              <button type="submit" className={styles['card-button']}>
+                                一键投票
+                              </button>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles['card-votes']}>
-                        <span>{this.toThousands(item.votes)}</span>
-                        票
-                      </div>
-                      <div>
-                        <form onSubmit={this.formSubmit.bind(this)}>
-                          <input type="hidden" name="cardid" value={item.card.card_id} />
-                          <input type="hidden" name="cardname" value={item.card.fields.find(fields => fields.key === 'name').value} />
-                          <button type="submit" className={styles['card-button']}>
-                            一键投票
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                ))
-                : <div>no result</div>
-            }
-          </Col>
-        </Row>
-      </div>
+                    ))
+                    : <div>no result</div>
+                }
+              </Col>
+            </Row>
+          </div>
+        </Content>
+        <Footer className={styles.footer}>
+          作者：
+          {/* Jackie.Tu */}
+        </Footer>
+      </Layout>
     );
   }
 }

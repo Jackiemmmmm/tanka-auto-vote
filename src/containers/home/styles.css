@@ -1,6 +1,22 @@
+@import '../../common/constants.css';
+
 select {
   display: block;
 }
+
+.header, .footer {
+  background-color: $bgColor;
+  color: white;
+}
+
+.content {
+  background-color: white;
+  margin: 24px 16px;
+  > div {
+    padding: 15px 34px;
+  }
+}
+
 
 .card {
   width: calc(50% - 20px);

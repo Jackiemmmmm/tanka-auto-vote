@@ -1,4 +1,4 @@
-$transition: 0.3s;
+/* $transition: 0.3s;
 $container-width: 1190px;
 $headerHeight: 60px;
 $footerHeight: 160px;
@@ -33,4 +33,8 @@ $orderBookColumnWidth: 78px;
   display: inline-block;
   line-height: 1;
   outline: none;
-}
+} */
+
+
+/* theme color */
+$bgColor: #51A8DD;
