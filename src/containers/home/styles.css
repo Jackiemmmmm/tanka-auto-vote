@@ -10,6 +10,7 @@ select {
 }
 
 .content {
+  overflow-y: scroll;
   background-color: white;
   margin: 24px 16px;
   > div {
@@ -72,4 +73,11 @@ select {
 
 .timer {
   width: 300px;
+  p {
+    font-size: 12px;
+    margin-bottom: 0;
+  }
+  &-main {
+    margin-top: 10px;
+  }
 }

@@ -1,15 +1,17 @@
 import React, { PureComponent } from 'react';
 import Axios from 'axios';
-import { Row, Col, Select, Input, notification, Layout } from 'antd';
+import { Row, Col, Input, notification, Layout } from 'antd';
 import Timer from './timer';
+import CacheAccount from './cache-account';
+import MultipleSelect from './multiple-select';
 import styles from './styles.css';
 
-const { Option } = Select;
 const { Header, Footer, Content } = Layout;
 
 export default class Votes extends PureComponent {
   state = {
     cacheList: [],
+    defaultCacheList: [],
     list: [],
     settimeoutMap: {},
   }
@@ -19,15 +21,39 @@ export default class Votes extends PureComponent {
   componentWillMount() {
     const data = localStorage.getItem('cache');
     if (data) {
-      this.setState({ cacheList: JSON.parse(data) });
+      this.setState({ cacheList: JSON.parse(data), defaultCacheList: JSON.parse(data) });
     }
   }
 
-  handleChange = (value) => {
-    console.log(`selected ${value}`);
+  formSubmit = (e, bol = false) => {
+    e.preventDefault();
+    if (bol) {
+      const { token, remark } = e.target;
+      const concatData = [{ token: token.value, remark: remark.value }];
+      const getStorage = localStorage.getItem('cache');
+      let data = JSON.stringify(concatData);
+      if (getStorage) {
+        data = JSON.stringify(concatData.concat(JSON.parse(getStorage)));
+      }
+      localStorage.setItem('cache', data);
+      this.setState({ cacheList: JSON.parse(data) });
+      return e.target.reset();
+    }
+    const { cardid, cardname } = e.target;
+    const { cacheList } = this.state;
+    this.showArr = cacheList.map(() => false);
+    return cacheList.map((item, idx) => this.voteRequest({
+      cardid: cardid.value,
+      item,
+      length: cacheList.length,
+      name: cardname.value,
+      idx,
+    }));
   }
 
-  async fakeShareWeixin({ cardid, token, length, name }) {
+  selectCallback = cacheList => this.setState({ cacheList })
+
+  async fakeShareWeixin({ cardid, item, length, name }) {
     try {
       const { data } = await Axios.post(
         'https://api-tanka.tictalk.com/v1/shares/fake_weixin',
@@ -38,11 +64,11 @@ export default class Votes extends PureComponent {
         },
         {
           headers: {
-            Authorization: `Token ${token}`,
+            Authorization: `Token ${item.token}`,
           },
         },
       );
-      if (data) this.voteRequest({ cardid, token, length, name }, true);
+      if (data) this.voteRequest({ cardid, item, length, name }, true);
     } catch (error) {
       notification.error({
         message: '分享失败',
@@ -51,14 +77,14 @@ export default class Votes extends PureComponent {
     }
   }
 
-  async voteRequest({ cardid, token, length, name, idx = null }, bol = false) {
+  async voteRequest({ cardid, item, length, name, idx = null }, bol = false) {
     try {
       if (idx !== null) {
         if (!this.setData[cardid]) {
-          this.setData[cardid] = [{ cardid, token, name }];
+          this.setData[cardid] = [{ cardid, item, name }];
         } else {
           const d = this.setData[cardid];
-          d.push({ cardid, token, name });
+          d.push({ cardid, item, name });
           this.setData = Object.assign({}, this.setData, {
             [cardid]: d,
           });
@@ -78,7 +104,7 @@ export default class Votes extends PureComponent {
         },
         {
           headers: {
-            Authorization: `Token ${token}`,
+            Authorization: `Token ${item.token}`,
           },
         },
       );
@@ -88,53 +114,27 @@ export default class Votes extends PureComponent {
       });
       const { list } = this.state;
       return this.setState({
-        list: list.map((item) => {
-          if (item.card.card_id === cardid) {
-            return Object.assign({}, item, {
-              votes: item.votes + data.result.votes,
+        list: list.map((child) => {
+          if (child.card.card_id === cardid) {
+            return Object.assign({}, child, {
+              votes: child.votes + data.result.votes,
             });
           }
-          return item;
+          return child;
         }),
       }, () => {
-        if (!bol) this.voteRequest({ cardid, token, length, name });
+        if (!bol) this.voteRequest({ cardid, item, length, name });
       });
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data.code === 711) {
-        return this.fakeShareWeixin({ cardid, token, length, name });
+        return this.fakeShareWeixin({ cardid, item, length, name });
       }
       return notification.error({
         message: '投票失败',
         description: error.response && error.response.data.message,
       });
     }
-  }
-
-  formSubmit(e, bol = false) {
-    e.preventDefault();
-    if (bol) {
-      const { token, remark } = e.target;
-      const concatData = [{ token: token.value, remark: remark.value }];
-      const getStorage = localStorage.getItem('cache');
-      let data = JSON.stringify(concatData);
-      if (getStorage) {
-        data = JSON.stringify(concatData.concat(JSON.parse(getStorage)));
-      }
-      localStorage.setItem('cache', data);
-      this.setState({ cacheList: JSON.parse(data) });
-      return e.target.reset();
-    }
-    const { cardid, cardname } = e.target;
-    const { cacheList } = this.state;
-    this.showArr = cacheList.map(() => false);
-    return cacheList.map((item, idx) => this.voteRequest({
-      cardid: cardid.value,
-      token: item.token,
-      length: cacheList.length,
-      name: cardname.value,
-      idx,
-    }));
   }
 
   async searchSubmit(e) {
@@ -160,45 +160,19 @@ export default class Votes extends PureComponent {
   }
 
   render() {
-    const { cacheList, list, settimeoutMap } = this.state;
+    const { list, settimeoutMap, defaultCacheList } = this.state;
     return (
       <Layout style={{ height: '100%' }}>
         <Header className={styles.header}>简化操作工具</Header>
         <Content className={styles.content}>
           <div>
             <Row gutter={24}>
-              <Col span={24}>
-                <h5>缓存账号</h5>
-              </Col>
-              <form onSubmit={e => this.formSubmit(e, true)}>
-                <Col span={6}>
-                  <Input name="token" placeholder="账号token" />
-                </Col>
-                <Col span={6}>
-                  <Input name="remark" placeholder="备注" />
-                </Col>
-                <Col span={6}>
-                  <button className="ant-btn ant-btn-primary" type="submit">保存</button>
-                </Col>
-              </form>
+              <CacheAccount formSubmit={e => this.formSubmit(e, true)} />
               <Col span={24}>
                 <h5>会被用于投票的账号</h5>
               </Col>
               <Col span={24}>
-                <Select
-                  style={{ width: '50%' }}
-                  placeholder="请选择"
-                  mode="multiple"
-                  defaultValue={cacheList.map(item => item.remark)}
-                  onChange={this.handleChange}
-                >
-                  {
-                    cacheList.length !== 0
-                    && cacheList.map((item, idx) => (
-                      <Option key={`${item.token} ${idx}`} value={item.token}>{item.remark}</Option>
-                    ))
-                  }
-                </Select>
+                <MultipleSelect cacheList={defaultCacheList} selectCallback={this.selectCallback} />
               </Col>
               <Col span={24}>
                 <h5>定时投票用户</h5>

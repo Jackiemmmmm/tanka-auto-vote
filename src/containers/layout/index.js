@@ -15,6 +15,7 @@ export default class Layout extends PureComponent {
     let show = false;
     switch (ip) {
       case '192.168.42.143':
+      case '192.168.42.241':
         show = true;
         break;
       default:
