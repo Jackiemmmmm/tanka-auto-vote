@@ -1,6 +1,6 @@
-# exchange-web
+# Tanka Auto Vote
 
-> Base react, redux project and antd component
+> Base react and antd component
 
 ## Development
 
@@ -19,24 +19,4 @@ $ yarn start
 
 ```sh
 $ yarn build
-```
-
-## Deploy
-
-### nginx
-```sh
-$ docker run -d --name dealer -p 9005:80 \
--v `pwd`/build:/usr/share/nginx/html:ro \
--v `pwd`/default.conf:/etc/nginx/conf.d/default.conf \
--v `pwd`/nginx.conf:/etc/nginx/nginx.conf \
-nginx
-```
-
-### caddy
-```sh
-docker run -d --name dealer \
-    -v $(pwd)/Caddyfile:/etc/Caddyfile \
-    -v $(pwd)/build:/var/www/dealer \
-    -p 9005:80 \
-    abiosoft/caddy
 ```
