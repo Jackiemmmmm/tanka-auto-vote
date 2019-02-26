@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development ENV=dev webpack-dev-server --config config/webpack.config.dev.js --inline --progress",
-    "stage": "rm -rf build/* && NODE_ENV=production webpack --config config/webpack.config.prod.js --progress --colors --define process.env.ENV='\"stage\"'",
-    "build": "rm -rf build/* && NODE_ENV=production webpack --config config/webpack.config.prod.js --progress --colors --define process.env.ENV='\"prod\"'",
+    "start": "cross-env NODE_ENV=development ENV=dev webpack-dev-server --config config/webpack.config.dev.js --inline --progress",
+    "stage": "rm -rf build/* && cross-env NODE_ENV=production webpack --config config/webpack.config.prod.js --progress --colors --define process.env.ENV='\"stage\"'",
+    "build": "rm -rf build/* && cross-env NODE_ENV=production webpack --config config/webpack.config.prod.js --progress --colors --define process.env.ENV='\"prod\"'",
     "build:windows": "",
     "test": "true"
   },
@@ -39,6 +39,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "classnames": "^2.2.6",
+    "cross-env": "^5.2.0",
     "css-loader": "^1.0.1",
     "eslint": "^5.0.1",
     "eslint-config-airbnb": "^17.0.0",
