@@ -90,18 +90,18 @@ export default class timer extends PureComponent {
     return (
       <Card key={item[0].cardid} title={item[0].name} className={styles.timer}>
         <p style={{ paddingBottom: '10px' }}>
-          自动投票用户：
+          {'自动投票用户：'}
           {item.length}
         </p>
         {list.map(child => (
           <div className={styles['timer-main']} key={child.idx}>
             <p>
               {child.user}
-              &nbsp; 距下次投票时间还有 &nbsp;
+              {'&nbsp; 距下次投票时间还有 &nbsp;'}
               <CountDown time={child.nextTime} />
             </p>
             <p>
-              上次投票时间：
+              {'上次投票时间：'}
               {child.dateNow.toLocaleString()}
             </p>
           </div>

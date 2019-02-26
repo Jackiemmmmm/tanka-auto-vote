@@ -207,14 +207,14 @@ export default class Votes extends PureComponent {
                           </div>
                           <div className={styles['card-votes']}>
                             <span>{this.toThousands(item.votes)}</span>
-                            票
+                            { '票' }
                           </div>
                           <div>
                             <form onSubmit={this.formSubmit.bind(this)}>
                               <input type="hidden" name="cardid" value={item.card.card_id} />
                               <input type="hidden" name="cardname" value={item.card.fields.find(fields => fields.key === 'name').value} />
                               <button type="submit" className={styles['card-button']}>
-                                一键投票
+                                {'一键投票'}
                               </button>
                             </form>
                           </div>
@@ -228,7 +228,7 @@ export default class Votes extends PureComponent {
           </div>
         </Content>
         <Footer className={styles.footer}>
-          作者：
+          {'作者：'}
           {/* Jackie.Tu */}
         </Footer>
       </Layout>

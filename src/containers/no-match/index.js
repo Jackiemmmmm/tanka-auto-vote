@@ -32,7 +32,7 @@ class NoMatch extends PureComponent {
     const { time } = this.state;
     return (
       <div>
-        404
+        {'404'}
         <br />
         {`${time}s later will go back`}
       </div>

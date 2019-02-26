@@ -46,9 +46,9 @@ export default class CountDown extends PureComponent {
     return (
       <span>
         {minutes}
-        分
+        {'分'}
         {seconds}
-        秒
+        {'秒'}
       </span>
     );
   }
