@@ -13,8 +13,6 @@ console.log(BASE_PATH);
 
 const commonExtract = new MiniCssExtractPlugin({
   filename: devMode ? 'assets/[name].bundle.css' : 'assets/[name].bundle.css?v=[contenthash:5]',
-  allChunks: true,
-  disable: false,
 });
 
 exports.baseConfig = {
@@ -60,7 +58,6 @@ exports.baseConfig = {
             options: {
               modules: true,
               sourceMap: true,
-              minimize: true,
               importLoaders: 1,
               localIdentName: '[local]',
             },
